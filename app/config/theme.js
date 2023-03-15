@@ -1,6 +1,6 @@
 import {createTheme} from '@rneui/themed';
 
-const theme = createTheme({
+export default theme = createTheme({
   lightColors: {
     primary: '#e7e7e8',
   },
@@ -13,7 +13,3 @@ const theme = createTheme({
   },
   mode: 'dark',
 });
-
-module.exports = {
-    theme
-}
