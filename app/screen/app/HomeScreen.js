@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Skeleton, Text, useTheme } from '@rneui/themed';
+import { Text, useTheme } from '@rneui/themed';
 import { Dimensions, StyleSheet } from 'react-native';
 import {FlatList, TouchableWithoutFeedback, View} from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import LoadingMovieList from '../../components/LoadingMovieList';
+import AppService from '../../service/AppService';
+
+import {API_URL_IMAGES} from '@env';
 
 const { width } = Dimensions.get("screen");
 
@@ -19,11 +22,19 @@ export default HomeScreen = ({ navigation }) => {
         getData();
     }, []);
 
-    const getData = () => {
-        setTimeout(() => {
-            setListMovie([...new Array(30).keys()])
-            // setLoading(false);
-        }, 1000);
+    const getData = async () => {
+
+        try {
+
+          const res = await AppService.get('movie/popular');
+
+          setListMovie(res.results);
+          setLoading(false);
+
+        } catch (error) {
+          setListMovie([]);
+          setLoading(false);
+        }
     }
 
     if (loading){
@@ -50,7 +61,7 @@ export default HomeScreen = ({ navigation }) => {
               renderItem={({item}) => (
                 <TouchableWithoutFeedback
                   onPress={() =>
-                    navigation.navigate('MovieDetail', {movieID: 123})
+                    navigation.navigate('MovieDetail', {movieID: item.id})
                   }>
                   <View
                     style={{
@@ -60,11 +71,11 @@ export default HomeScreen = ({ navigation }) => {
                       <View>
                         <AutoHeightImage
                           source={{
-                            uri: 'https://image.tmdb.org/t/p/w300/n9YWVQRc0zw0nwrFcOkOpffZxjc.jpg',
+                            uri: `${API_URL_IMAGES}w300/${item.poster_path}`,
                           }}
-                          width={(width-80)/2}
+                          width={(width - 80) / 2}
                           style={{
-                            borderRadius: 15
+                            borderRadius: 15,
                           }}
                         />
                       </View>
@@ -78,13 +89,13 @@ export default HomeScreen = ({ navigation }) => {
                             fontSize: RFPercentage(2.5),
                             marginBottom: 5,
                           }}>
-                          Title
+                          {item.original_title}
                         </Text>
                         <Text
                           style={{
                             color: theme.colors.grey1,
                           }}>
-                          Description
+                          {item.overview.substring(0, 50) + '...'}
                         </Text>
                       </View>
                     </View>

@@ -1,5 +1,6 @@
-// import AppService from "../../services/apps";
 import * as actionTypes from "../type";
+import AppService from "../../service/AppService";
+
 
 const authRequest = () => (
     {type: actionTypes.AUTH_REQUEST}
@@ -20,10 +21,9 @@ export const authData = () => {
         dispatch(authRequest());
 
         try {
-            const dataAccount = {
-                name: "Hasib Muharam"
-            }
-            dispatch(authSuccess(dataAccount));
+
+            const res = await AppService.get('account');
+            dispatch(authSuccess(res));
         } catch (error) {
             dispatch(authFailed());
         }

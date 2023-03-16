@@ -37,8 +37,6 @@ function RouteApp() {
 
     const dataAccount = useSelector(tsate => tsate.dataAccount);
 
-    console.log(dataAccount);
-
     useEffect(() => {
         dispatch(authData());
     }, [])
@@ -76,15 +74,15 @@ function RouteApp() {
               options={{
                 headerLeft: () => (
                   <Avatar
-                    title={'H'}
+                    title={dataAccount.data.name[0]}
                     rounded
                     containerStyle={{
-                      backgroundColor: theme.colors.grey1,
+                      backgroundColor: theme.colors.grey0,
                       marginRight: 10,
                     }}
                   />
                 ),
-                title: dataAccount.data.nama,
+                title: dataAccount.data.name,
                 headerTitleStyle: {
                   fontFamily: 'Lato-Bold',
                 },

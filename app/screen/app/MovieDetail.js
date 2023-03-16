@@ -1,14 +1,17 @@
-import { Text, useTheme, Divider, Icon, Skeleton } from '@rneui/themed';
+import { Text, useTheme, Divider, Icon, Skeleton, Image } from '@rneui/themed';
 import React, { useEffect, useState } from 'react';
 import {View, ScrollView, StatusBar, TouchableWithoutFeedback, Dimensions} from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { RFPercentage } from 'react-native-responsive-fontsize';
+import AppService from '../../service/AppService';
+import {API_URL_IMAGES} from '@env';
 
 const { width, height } = Dimensions.get("screen");
 
 export default MovieDetail = ({ navigation, route }) => {
 
     const [loading, setLoading] = useState(true);
+    const [dataMovie, setDataMovie] = useState("");
 
     const { theme } = useTheme();
 
@@ -16,10 +19,20 @@ export default MovieDetail = ({ navigation, route }) => {
       getData();
     }, []);
 
-    const getData = () => {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+    const getData = async () => {
+     
+        try {
+
+          const res = await AppService.get(`movie/${route.params.movieID}`);
+
+          setDataMovie(res);
+          setLoading(false);
+
+        } catch (error) {
+          setDataMovie("");
+          setLoading(false);
+        }
+
     };
 
 
@@ -64,15 +77,24 @@ export default MovieDetail = ({ navigation, route }) => {
                 }}
               />
             ) : (
-              <AutoHeightImage
+              <Image
                 source={{
-                  uri: 'https://image.tmdb.org/t/p/w300/n9YWVQRc0zw0nwrFcOkOpffZxjc.jpg',
+                  uri: `${API_URL_IMAGES}w500/${dataMovie.poster_path}`,
                 }}
-                width={width}
+                // width={width}
                 style={{
                   borderBottomLeftRadius: 15,
                   borderBottomRightRadius: 15,
+                  width: width,
+                  height: height * 0.6,
                 }}
+                loadingIndicatorSource={
+                  <Skeleton
+                    style={{
+                      height: height * 0.6,
+                    }}
+                  />
+                }
               />
             )}
           </View>
@@ -85,34 +107,26 @@ export default MovieDetail = ({ navigation, route }) => {
               <Skeleton width={'70%'} />
             ) : (
               <Text bold style={{fontSize: RFPercentage(3)}}>
-                Title Movie Here
+                {dataMovie.original_title}
               </Text>
             )}
             {loading ? (
               <Skeleton width={'50%'} style={{marginVertical: 10}} />
             ) : (
               <Text style={{marginTop: 10, marginBottom: 5}}>
-                Title Movie Here
+                {dataMovie.overview}
               </Text>
             )}
             {loading ? (
               <Skeleton width={'40%'} />
             ) : (
-              <Text>Genre, Other Genre</Text>
-            )}
-
-            <Divider color={theme.colors.white} style={{marginVertical: 20}} />
-
-            {loading ? (
-              <View>
-                <Skeleton width={'90%'} style={{marginBottom: 8}} />
-                <Skeleton width={'80%'} style={{marginBottom: 8}} />
-                <Skeleton width={'60%'} style={{marginBottom: 8}} />
-                <Skeleton width={'70%'} style={{marginBottom: 8}} />
-                <Skeleton width={'40%'} style={{marginBottom: 8}} />
-              </View>
-            ) : (
-              <Text>Description</Text>
+              <Text style={{marginTop: 8}}>
+                Genre : {dataMovie.genres.map((item, index) =>
+                  index === dataMovie.genres.length - 1
+                    ? item.name
+                    : item.name + ', ',
+                )}
+              </Text>
             )}
           </View>
         </ScrollView>
