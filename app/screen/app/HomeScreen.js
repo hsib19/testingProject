@@ -1,7 +1,10 @@
-import { Button, Text, useTheme } from '@rneui/themed';
 import React, { useEffect, useState } from 'react';
-import { Dimensions } from 'react-native';
+import { Button, Skeleton, Text, useTheme } from '@rneui/themed';
+import { Dimensions, StyleSheet } from 'react-native';
 import {FlatList, TouchableWithoutFeedback, View} from 'react-native';
+import AutoHeightImage from 'react-native-auto-height-image';
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import LoadingMovieList from '../../components/LoadingMovieList';
 
 const { width } = Dimensions.get("screen");
 
@@ -18,17 +21,13 @@ export default HomeScreen = ({ navigation }) => {
 
     const getData = () => {
         setTimeout(() => {
-            setListMovie([...new Array(60).keys()])
-            setLoading(false);
+            setListMovie([...new Array(30).keys()])
+            // setLoading(false);
         }, 1000);
     }
 
     if (loading){
-        return(
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        )
+        return <LoadingMovieList />;
     }
       return (
         <View
@@ -45,36 +44,48 @@ export default HomeScreen = ({ navigation }) => {
               data={listMovie}
               horizontal={false}
               keyExtractor={(_, index) => index.toString()}
-              columnWrapperStyle={{
-                justifyContent: 'space-around',
-              }}
+              columnWrapperStyle={styles.containerList}
               numColumns={2}
               showsVerticalScrollIndicator={false}
               renderItem={({item}) => (
-                <TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    navigation.navigate('MovieDetail', {movieID: 123})
+                  }>
                   <View
                     style={{
                       width: '45%',
-                      marginBottom: 20
                     }}>
-                    <View
-                      style={
-                        {
-                          // width: '90%',
-                        }
-                      }>
+                    <View>
                       <View>
-                        <View 
-                            style={{ height: 110, backgroundColor: '#f5f5f5', borderRadius: 15 }}
-                         />
+                        <AutoHeightImage
+                          source={{
+                            uri: 'https://image.tmdb.org/t/p/w300/n9YWVQRc0zw0nwrFcOkOpffZxjc.jpg',
+                          }}
+                          width={(width-80)/2}
+                          style={{
+                            borderRadius: 15
+                          }}
+                        />
                       </View>
                       <View
                         style={{
-                            paddingVertical: 20
-                        }}
-                      >
-                        <Text>Title</Text>
-                        <Text>Description</Text>
+                          paddingTop: 20,
+                        }}>
+                        <Text
+                          bold
+                          style={{
+                            fontSize: RFPercentage(2.5),
+                            marginBottom: 5,
+                          }}>
+                          Title
+                        </Text>
+                        <Text
+                          style={{
+                            color: theme.colors.grey1,
+                          }}>
+                          Description
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -85,3 +96,10 @@ export default HomeScreen = ({ navigation }) => {
         </View>
       );
 }
+
+const styles = StyleSheet.create({
+  containerList: {
+    justifyContent: 'space-around',
+    padding: 15,
+  },
+});

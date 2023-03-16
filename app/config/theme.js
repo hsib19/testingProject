@@ -1,4 +1,5 @@
 import {createTheme} from '@rneui/themed';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 
 export default theme = createTheme({
   lightColors: {
@@ -12,4 +13,18 @@ export default theme = createTheme({
     grey1: '#888888',
   },
   mode: 'dark',
+  components: {
+    Text: props => ({
+      style: {
+        fontFamily: props.bold ?  'Lato-Bold' : 'Lato-Regular',
+        color: '#fff'
+      },
+    }),
+    Skeleton: {
+        style: {
+            borderRadius: 15
+        },
+        animation: "wave"
+    }
+  },
 });
